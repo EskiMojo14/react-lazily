@@ -3,8 +3,8 @@ import { fireEvent, render } from '@testing-library/react'
 import { lazily } from '../src/index'
 
 it('Shows loading for some random component', async () => {
-  const f = jest.fn()
-  const { Component } = lazily(() => new Promise((r) => f(r)))
+  const f = jest.fn(async () => ({ Component: () => <>Hello</> }))
+  const { Component } = lazily(f)
 
   const App: React.FC = () => {
     const [open, setOpen] = React.useReducer(() => true, false)
@@ -27,4 +27,6 @@ it('Shows loading for some random component', async () => {
   await findByText('Loading...')
 
   expect(f).toBeCalledTimes(1)
+
+  await findByText('Hello')
 })

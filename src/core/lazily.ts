@@ -1,14 +1,31 @@
-import { lazy } from 'react'
+import { lazy, ComponentType, LazyExoticComponent } from 'react'
+import { ComponentKeys } from '../util/types'
 
-export const lazily = <T extends {}, U extends keyof T>(
-  loader: (x?: string) => Promise<T>
+/**
+ * Map a module to an object of lazy-loaded components.
+ * Non-component keys will be filtered out.
+ */
+export type LazyComponents<T extends {}> = Pick<
+  {
+    [K in keyof T]: T[K] extends ComponentType<any>
+      ? LazyExoticComponent<T[K]>
+      : never
+  },
+  // using Pick here instead of using key remapping directly preserves the reference to the original component
+  // so you can Cmd/Ctrl + click on the imported component to jump to its definition
+  // unfortunately key remapping seems to lose this context, which is worse DX
+  ComponentKeys<T>
+>
+
+export const lazily = <T extends {}>(
+  loader: (x: keyof LazyComponents<T> & string) => Promise<T>
 ) =>
-  new Proxy(({} as unknown) as T, {
-    get: (target, componentName: string | symbol) => {
+  new Proxy({} as LazyComponents<T>, {
+    get: (target, componentName) => {
       if (typeof componentName === 'string') {
         return lazy(() =>
-          loader(componentName).then((x) => ({
-            default: (x[componentName as U] as any) as React.ComponentType<any>,
+          loader(componentName as never).then((x) => ({
+            default: x[componentName as never] as ComponentType<any>,
           }))
         )
       }

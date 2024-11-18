@@ -3,8 +3,8 @@ import { fireEvent, render } from '@testing-library/react'
 import { loadable } from '../src/loadable'
 
 it('Shows loading for some random component', async () => {
-  const f = jest.fn()
-  const { Component } = loadable(() => new Promise((r) => f(r)), {
+  const f = jest.fn(async () => ({ Component: () => <>Hello</> }))
+  const { Component } = loadable(f, {
     fallback: 'Loading...',
   })
 
@@ -19,4 +19,6 @@ it('Shows loading for some random component', async () => {
   await findByText('Loading...')
 
   expect(f).toBeCalledTimes(1)
+
+  await findByText('Hello')
 })
