@@ -14,11 +14,13 @@ export type LazyComponents<T extends {}> = Pick<
   // using Pick here instead of using key remapping directly preserves the reference to the original component
   // so you can Cmd/Ctrl + click on the imported component to jump to its definition
   // unfortunately key remapping seems to lose this context, which is worse DX
-  ComponentKeys<T>
+  //
+  // we intersect with string because we're filtering out symbol keys in our get trap
+  ComponentKeys<T> & string
 >
 
 export const lazily = <T extends {}>(
-  loader: (x: keyof LazyComponents<T> & string) => Promise<T>
+  loader: (x: keyof LazyComponents<T>) => Promise<T>
 ) =>
   new Proxy({} as LazyComponents<T>, {
     get: (target, componentName) => {

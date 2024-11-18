@@ -16,7 +16,7 @@ export type LoadableComponents<T extends {}> = Pick<
       : never
   },
   // see core for why we use Pick here
-  ComponentKeys<T>
+  ComponentKeys<T> & string
 >
 
 // see https://loadable-components.com/docs/babel-plugin/#loadable-detection
