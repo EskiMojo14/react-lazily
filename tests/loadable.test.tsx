@@ -5,7 +5,7 @@ import { loadable } from '../src/loadable'
 it('Shows loading for some random component', async () => {
   const f = jest.fn(async () => ({ Component: () => <>Hello</> }))
   const { Component } = loadable(f, {
-    fallback: 'Loading...',
+    fallback: <>Loading...</>,
   })
 
   const App: React.FC = () => {
