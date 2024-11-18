@@ -27,6 +27,7 @@ it('Shows loading for some random component', async () => {
   await findByText('Loading...')
 
   expect(f).toBeCalledTimes(1)
+  expect(f).toBeCalledWith('Component')
 
   await findByText('Hello')
 })
